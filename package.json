@@ -1,0 +1,12 @@
+{
+  "name": "reorder-picture",
+  "version": "1.0.0",
+  "description": "A Twitter bot that tweets pixel-reordered pictures",
+  "main": "app.js",
+  "author": "Malo Widerspach",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "twit": "^2.2.11"
+  }
+}
