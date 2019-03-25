@@ -1,5 +1,5 @@
 {
-  "name": "reorder-picture",
+  "name": "sort-machine-bot",
   "version": "1.0.0",
   "description": "A Twitter bot that tweets pixel-reordered pictures",
   "main": "app.js",
