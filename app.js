@@ -23,18 +23,4 @@ users.forEach(async user => {
   }
 });
 
-
-// call handleTweet from bot.js module
-
 // answer @archillect's tweet with the new media generated
-
-
-
-
-/* useful content :
-
-  https://www.npmjs.com/package/twit
-  https://www.npmjs.com/package/jimp
-  https://medium.com/@rossbulat/image-processing-in-nodejs-with-jimp-174f39336153
-
-*/
