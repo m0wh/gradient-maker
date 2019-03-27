@@ -1,15 +1,15 @@
 const Jimp = require("jimp");
 const color = require("tinycolor2");
+const { konsole } = require("./utils");
 
 const sortPixels = async (imageSrc, id) => {
   try {
     const rawImage = await Jimp.read(imageSrc);
     const v = await vertical(rawImage);
     const h = await horizontal(v);
-    // return h.getBase64Async(Jimp.MIME_JPEG);
     return h.writeAsync(`./output/${id}.jpg`).then(() => `./output/${id}.jpg`);
   } catch (e) {
-    console.log(e);
+    konsole.error(e);
   }
 }
 
@@ -35,7 +35,7 @@ const horizontal = image => {
     }
   }
 
-  console.log("horizontal: done!");
+  konsole.log("Horizontal: done!");
   return Jimp.read(newImage);
 }
 
@@ -61,7 +61,7 @@ const vertical = image => {
     }
   }
 
-  console.log("vertical: done!");
+  konsole.log("Vertical: done!");
   return Jimp.read(newImage);
 }
 

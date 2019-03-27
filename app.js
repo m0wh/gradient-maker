@@ -1,6 +1,7 @@
 const Twit = require("twit");
 const fs = require("fs");
 const { sortPixels } = require("./bot");
+const { konsole } = require("./utils");
 
 require("dotenv").config();
 
@@ -11,18 +12,22 @@ const T = new Twit({
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-const users = [ "archillect" ];
 
-// // search for new tweets from users
-users.forEach(async user => {
-  try {
-    const search = await T.get("statuses/user_timeline", { screen_name: user, count: 1 });
-    console.log("generating image from " + user);
-    const img = await generateImage(search.data[0]);
-    console.log("generated");
-    tweet("", img, "Tweeted from Node");
-  } catch (e) {
-    console.log(e);
+const tweetsFilter = {
+  follow: [
+    // "2907774137", // archillect
+    // "1109859953496518656", // sortmachine
+    "2395539148", // mowhtr — for development
+  ]
+};
+
+const stream = T.stream("statuses/filter", tweetsFilter);
+stream.on("tweet", async tweet => {
+  if (tweetsFilter.follow.includes(tweet.user.id_str) && tweet.extended_entities) {
+    konsole.log(`New tweet from @${ tweet.user.screen_name }. Generating image...`);
+    const imageSrc = tweet.extended_entities.media[0].media_url_https;
+    const imgPath = await generateImage(tweet);
+    tweetImage(`@${ tweet.user.screen_name }`, imgPath, `${ tweet.user.screen_name }'s image remix`, tweet.id_str);
   }
 });
 
@@ -32,17 +37,18 @@ const generateImage = tweet => {
 }
 
 // answer @archillect's tweet with the new media generated
+const tweetText = (text, replyID, mediaIdStr = "") => {
+  T.post('statuses/update', { in_reply_to_status_id: replyID, status: text, media_ids: [mediaIdStr] }, (err, data, response) => { konsole.log("Tweeted!") });
+}
 
-const tweet = (text, src, alt) => {
-  const b64content = fs.readFileSync(src, { encoding: 'base64' });
+const tweetImage = (text, path, alt, replyID) => {
+  const b64content = fs.readFileSync(path, { encoding: 'base64' });
   T.post('media/upload', { media_data: b64content }, (err, data, response) => {
-    const mediaIdStr = data.media_id_string  
+    const mediaIdStr = data.media_id_string
     T.post('media/metadata/create', { media_id: mediaIdStr, alt_text: { text: alt } }, (err, data, response) => {
       if (!err) {
-        T.post('statuses/update', { status: text, media_ids: [mediaIdStr] }, (err, data, response) => { console.log(data) });
+        tweetText(text, replyID, mediaIdStr);
       }
     })
   })
 }
-
-// tweet("hello", "./output/test.jpg", "lalalala");
