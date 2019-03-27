@@ -1,12 +1,13 @@
 const Jimp = require("jimp");
 const color = require("tinycolor2");
 
-const sortPixels = async imageSrc => {
+const sortPixels = async (imageSrc, id) => {
   try {
     const rawImage = await Jimp.read(imageSrc);
     const v = await vertical(rawImage);
     const h = await horizontal(v);
-    return h.writeAsync("./output/test.jpg");
+    // return h.getBase64Async(Jimp.MIME_JPEG);
+    return h.writeAsync(`./output/${id}.jpg`).then(() => `./output/${id}.jpg`);
   } catch (e) {
     console.log(e);
   }
